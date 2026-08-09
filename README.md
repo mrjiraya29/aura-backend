@@ -44,6 +44,17 @@ You should see `Aura backend listening on http://localhost:3001`.
 
 Auth is a `Bearer <token>` header, using the token returned by signup/login.
 
+**If signup/login fails with a 500 and the server log shows `P1011` /
+`self-signed certificate in certificate chain` / `TlsConnectionError`:** RDS's TLS certificate
+is signed by Amazon's own CA (`rds-ca-...`), which isn't in Node's default trusted root store.
+Newer versions of the `pg` driver also started treating `sslmode=require` as strict full
+verification rather than the old "encrypt but don't verify" behavior, which is what actually
+surfaces this. Fix: add `uselibpqcompat=true` to `DATABASE_URL`'s query string (already in
+`.env.example`) — this restores the older, more permissive behavior appropriate for connecting
+to your own known RDS instance in development. For a more rigorous setup later, download
+Amazon's RDS CA bundle and pass it as the `ca` option to the `PrismaPg` adapter in `src/db.js`
+instead.
+
 ## About the Prisma 7 setup
 
 Prisma 7's new default generator (`prisma-client`) turned out to have real, currently-open bugs
