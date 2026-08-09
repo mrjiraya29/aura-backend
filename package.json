@@ -23,7 +23,7 @@
   "devDependencies": {
     "prisma": "^7.0.0"
   },
-  "engines": {
-    "node": ">=18"
-  }
+ "engines": {
+  "node": "22.12.0"
+}
 }
